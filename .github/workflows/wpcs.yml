@@ -27,40 +27,13 @@ jobs:
           phpcs --config-set default_standard WordPress
 
       - name: Run WPCS
-        id: wpcs-check
         run: phpcs --standard=WordPress .
 
-      - name: Report WPCS status
-        id: wpcs-status
-        if: ${{ always() }}
-        run: |
-          if [[ ${GITHUB_REF} = "refs/pull/${{ github.event.pull_request.number }}/merge" ]]; then
-            if [[ ${{ steps.wpcs-check.outcome }} == 'failure' ]]; then
-              echo "WPCS check failed. Please fix the coding standards violations."
-              echo "::set-output name=conclusion::failure"
-            else
-              echo "WPCS check passed. The coding standards are met."
-              echo "::set-output name=conclusion::success"
-            fi
-          fi
+      - name: Show PHPCS Report
+        run: phpcs --report=summary --report-file=phpcs_report.txt --standard=WordPress .
 
-      - name: Set GitHub Check Status
-        uses: actions/github-script@v4
-        if: ${{ always() }}
+      - name: Upload PHPCS Report
+        uses: actions/upload-artifact@v2
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const conclusion = '${{ steps.wpcs-status.outputs.conclusion }}';
-            const details = conclusion === 'failure' ? 'WPCS check failed. Please fix the coding standards violations.' : 'WPCS check passed. The coding standards are met.';
-            github.checks.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              name: 'WPCS Check',
-              head_sha: context.sha,
-              status: 'completed',
-              conclusion: conclusion,
-              output: {
-                title: 'WPCS Check',
-                summary: details,
-              },
-            });
+          name: PHPCS Report
+          path: phpcs_report.txt
