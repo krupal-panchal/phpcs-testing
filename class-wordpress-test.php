@@ -25,6 +25,11 @@ class WordPress_Test {
 	 */
 	public int $age = 26;
 
+	/**
+	 * Status
+	 *
+	 * @var string $status Status.
+	 */
 	public string $status = '';
 
 	/**
