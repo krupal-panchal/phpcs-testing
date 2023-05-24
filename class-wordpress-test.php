@@ -25,6 +25,8 @@ class WordPress_Test {
 	 */
 	public int $age = 26;
 
+	public string $status = '';
+
 	/**
 	 * Instantiate the object.
 	 */
@@ -40,6 +42,7 @@ class WordPress_Test {
 	public function is_age_valid( $age ) : bool {
 
 		if ( $age > 25 ) {
+			$this->status = 'Valid';
 			return true;
 		} else {
 			return false;
