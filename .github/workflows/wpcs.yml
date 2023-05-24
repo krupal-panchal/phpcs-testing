@@ -1,0 +1,39 @@
+name: WordPress Coding Standards
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  wpcs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+
+      - name: Install WPCS
+        run: composer global require "wp-coding-standards/wpcs:*"
+
+      - name: Set up WPCS
+        run: |
+          phpcs --config-set installed_paths ~/.composer/vendor/wp-coding-standards/wpcs
+          phpcs --config-set default_standard WordPress
+
+      - name: Run WPCS
+        run: phpcs --standard=WordPress .
+
+      - name: Show PHPCS Report
+        run: phpcs --report=summary --report-file=phpcs_report.txt --standard=WordPress .
+
+      - name: Upload PHPCS Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: PHPCS Report
+          path: phpcs_report.txt
