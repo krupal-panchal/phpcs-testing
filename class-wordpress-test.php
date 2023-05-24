@@ -1,6 +1,13 @@
 <?php
 /**
- * This file basically created for Testing a WordPress Coding standard
+ * WPCS Testing.
+ *
+ * @package WordPress
+ * @author Krupal Panchal
+ */
+
+/**
+ * Class Testing a WordPress Coding standard.
  */
 class WordPress_Test {
 
