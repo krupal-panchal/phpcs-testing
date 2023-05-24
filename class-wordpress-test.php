@@ -16,7 +16,7 @@ class WordPress_Test {
 	 *
 	 * @var string $name Name
 	 */
-	public string $name = 'John';
+	public string $name = 'Peter';
 
 	/**
 	 * Age var
