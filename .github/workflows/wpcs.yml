@@ -1,7 +1,7 @@
 name: WordPress Coding Standards
 
 on:
-  push:
+  pull_request:
     branches:
       - master
 
@@ -27,13 +27,19 @@ jobs:
           phpcs --config-set default_standard WordPress
 
       - name: Run WPCS
+        id: wpcs-check
         run: phpcs --standard=WordPress .
 
-      - name: Show PHPCS Report
-        run: phpcs --report=summary --report-file=phpcs_report.txt --standard=WordPress .
-
-      - name: Upload PHPCS Report
-        uses: actions/upload-artifact@v2
-        with:
-          name: PHPCS Report
-          path: phpcs_report.txt
+      - name: Report WPCS status
+        if: ${{ always() }}
+        run: |
+          if [[ ${GITHUB_REF} = "refs/pull/${{ github.event.pull_request.number }}/merge" ]]; then
+            if [[ ${{ steps.wpcs-check.outcome }} == 'failure' ]]; then
+              echo "::set-output name=conclusion::failure"
+              echo "::set-output name=details::WPCS check failed. Please fix the coding standards violations."
+            else
+              echo "::set-output name=conclusion::success"
+              echo "::set-output name=details::WPCS check passed. The coding standards are met."
+            fi
+            gh pr check "${GITHUB_SHA}" --status "completed" --conclusion ${{ steps.wpcs-check.outputs.conclusion }} --name "WPCS Check" --details-url "${{ github.server_url }}/owner/repo/actions/runs/${{ github.run_id }}" --external-id "wpcs-check"
+          fi
