@@ -44,7 +44,7 @@ class WordPress_Test {
 	 *
 	 * @return bool
 	 */
-	public function is_age_valid($age ) : bool {
+	public function is_age_valid( $age ) : bool {
 
 		if ( $age > 25 ) {
 			$this->status = 'Valid';
